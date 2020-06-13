@@ -42,25 +42,27 @@ class StatisticsViewModel(
             null
         }
     }
-
-    val activeTasksPercent = stats.map {
-        it?.activeTasksPercent ?: 0f }
-    val completedTasksPercent: LiveData<Float> = stats.map { it?.completedTasksPercent ?: 0f }
-    val dataLoading: LiveData<Boolean> = _dataLoading
     val error: LiveData<Boolean> = tasks.map { it is Error }
     val empty: LiveData<Boolean> = tasks.map { (it as? Success)?.data.isNullOrEmpty() }
 
+
+    val activeTasksPercent = stats.map {
+        it?.activeTasksPercent ?: 0f
+    }
+    val completedTasksPercent: LiveData<Float> = stats.map { it?.completedTasksPercent ?: 0f }
+    val dataLoading: LiveData<Boolean> = _dataLoading
+
     fun refresh() {
         _dataLoading.value = true
-            viewModelScope.launch {
-                tasksRepository.refreshTasks()
-                _dataLoading.value = false
-            }
+        viewModelScope.launch {
+            tasksRepository.refreshTasks()
+            _dataLoading.value = false
+        }
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-class StatisticsViewModelFactory (
+class StatisticsViewModelFactory(
         private val tasksRepository: TasksRepository
 ) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>) =
